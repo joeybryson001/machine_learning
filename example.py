@@ -9,6 +9,8 @@
     representing the 'guesses' made by a predictor/regressor
     for each x in the data points.
 
+    It computes sum(y_i - y_hat_i)^2
+
 """
 def sum_square_error(data, hypothesis):
     if not data and not hypothesis:
