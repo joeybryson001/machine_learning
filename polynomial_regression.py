@@ -1,4 +1,4 @@
-"""parameters for this function: data - 2D list,parameters - list of length 2, h - small float or int, step_size - small float or int,
+"""parameters for this function: data - 2D list,parameters - list, h - small float or int, step_size - small float or int,
 epsilon - small float or int, iterations(optional) - default is None otherwise int""" 
 def regress(data,parameters,h,step_size,epsilon,iterations = None):
     import math
@@ -11,14 +11,11 @@ def regress(data,parameters,h,step_size,epsilon,iterations = None):
     if not type(parameters) == list:
         print("wrong data type for 'parameters'")
         return
-    if not len(parameters) == 2:
-        print("wrong length for 'parameters'")
-        return
     if not (type(h) == int or type(h) == float):
         print("wrong data type for 'h'")
         return
     if not (type(step_size) == int or type(step_size) == float):
-        print("wrong data type for 'step_size'")
+        print("wrong data typefor 'step_size'")
         return
     if not (type(epsilon) == int or type(step_size) == float):
         print("wrong data type for 'epsilon'")
@@ -26,15 +23,19 @@ def regress(data,parameters,h,step_size,epsilon,iterations = None):
     if not (type(iterations) == int or iterations is None):
         print("wrong data type for 'iterations'")
         return
-    
+
     #sum of squares function used to calculate error;
-    def calculate_error(m,c,data):
+    def calculate_error(parameters,data):
         total_error_squared = 0
         for i in range(len(data)):
-            estimate_y = m * data[i][0] + c
+            estimate_y = 0
+            for l in range(len(parameters)):
+                estimate_y += data[i][0]**(len(parameters)-l) * parameters[l]
+                
             error = data[i][1] - estimate_y
             total_error_squared += (error ** 2)
         return total_error_squared
+    print(calculate_error([1,1],[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]))
     #differential function used to calculate the dirivitive;
     def calculate_error_derivative(m,c,data):
         c_derivative = (calculate_error(m,c - h,data) - calculate_error(m,c + h,data)) / (-2 * h)
@@ -71,4 +72,4 @@ def predict(x,parameters):
         y = parameters[0]*x + parameters[1]
         return y
 #example;
-print(predict(10,regress([[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]],[1,1],-0.001,0.001,0.00000001)))
+print(predict(10,regress([[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]],[1,1],0.001,0.001,0.00000001)))
