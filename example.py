@@ -11,7 +11,10 @@
 
 """
 def sum_square_error(data, hypothesis):
+    if not data and not hypothesis:
+        return None
     return -1
+
 
 
 
