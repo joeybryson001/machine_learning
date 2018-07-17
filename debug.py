@@ -1,14 +1,14 @@
 import math
 import time
 start_time = time.time()
-data = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]
+data = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[100000000000000,-90000000000000]]
 prediction_x_value = 90
 start_m = -100
 start_c = -20
-acuracy_for_m = 0.001
-acuracy_for_c = 0.001
-step_size = 0.001
-acceptable_error = 0.00000001
+acuracy_for_m = 0.00001
+acuracy_for_c = 0.00001
+step_size = 0.01
+acceptible_error = 0.1
 def calculate_error(m,c,data):
     total_error_squared = 0
     for i in range(len(data)):
@@ -26,22 +26,20 @@ def calculate_error_2(m,c,data):
         total_error_squared += error ** 2
     return total_error_squared
 def calculate_error_derivative(m,c,data):
-    c_derivative = (calculate_error(m,c - acuracy_for_c,data) - calculate_error(m,c + acuracy_for_c,data)) / (-2 * acuracy_for_c)
-    m_derivative = (calculate_error(m - acuracy_for_m,c,data) - calculate_error(m + acuracy_for_m,c,data)) / (-2 * acuracy_for_m)
+    c_derivative1 = calculate_error(m,c - acuracy_for_c,data) 
+    c_derivative2 = calculate_error(m,c + acuracy_for_c,data)
+    c_derivative = (c_derivative1 - c_derivative2) / (-2 * acuracy_for_c)
+    m_derivative1 = calculate_error(m - acuracy_for_m,c,data) 
+    m_derivative2 = calculate_error(m + acuracy_for_m,c,data)
+    m_derivative = (m_derivative1 - m_derivative2) / (-2 * acuracy_for_m)
     return m_derivative, c_derivative   
 m = start_m
 c = start_c
 change_m, change_c = calculate_error_derivative(m,c,data)
-counter = 0
-while not (change_m < acceptable_error and change_m > -acceptable_error and change_c < acceptable_error and change_c > -acceptable_error): 
+while change_c + change_m > acceptible_error:
     change_m,change_c = calculate_error_derivative(m,c,data)
     m = m - step_size * change_m
     c = c - step_size * change_c
-    print(counter)
-    counter += 1
-    if counter > 100000:
-        print("timed out")
-        break
 print("time taken:"+str(time.time() - start_time))
 print("prediction for x = "+str(prediction_x_value)+" is "+str(m * prediction_x_value + c))
 print("final error is:"+str(calculate_error_derivative(m,c,data)))

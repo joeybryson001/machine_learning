@@ -1,4 +1,4 @@
-def calculate_error(m,c,data):
+def calculate_error_2(m,c,data):
     total_error_squared = 0
     for i in range(len(data)):
         y_intercept = data[i][1] + (data[i][0] / m)
