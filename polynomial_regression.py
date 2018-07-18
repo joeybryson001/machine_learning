@@ -1,6 +1,7 @@
 """parameters for this function: data - 2D list,parameters - list, h - small float or int, step_size - small float or int,
 epsilon - small float or int, iterations(optional) - default is None otherwise int""" 
-def regress(data,parameters,h,step_size,epsilon,iterations = None):
+from matplotlib import pyplot
+def regress(data,parameters,h,step_size,epsilon,iterations = 100):
     import math
     import time
     start_time = time.time()
@@ -30,38 +31,53 @@ def regress(data,parameters,h,step_size,epsilon,iterations = None):
         for i in range(len(data)):
             estimate_y = 0
             for l in range(len(parameters)):
-                estimate_y += data[i][0]**(len(parameters)-l) * parameters[l]
-                
+                estimate_y += (data[i][0] ** (len(parameters)-l-1)) * parameters[l]
             error = data[i][1] - estimate_y
-            total_error_squared += (error ** 2)
+            total_error_squared += ((error) ** 2)
         return total_error_squared
-    print(calculate_error([1,1],[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]))
     #differential function used to calculate the dirivitive;
-    def calculate_error_derivative(m,c,data):
-        c_derivative = (calculate_error(m,c - h,data) - calculate_error(m,c + h,data)) / (-2 * h)
-        m_derivative = (calculate_error(m - h,c,data) - calculate_error(m + h,c,data)) / (-2 * h)
-        return m_derivative, c_derivative 
+    def calculate_error_derivative(parameters,data,h):
+        derivitives = []
+        for i in range(len(parameters)):
+            param_upper = list(parameters)
+            param_lower = list(parameters) 
+            param_upper[i] += h
+            param_lower[i] -= h 
+            derivitives.append((calculate_error(param_upper,data)-calculate_error(param_lower,data))/(2 * h))
+
+        return derivitives 
     #setting variables;
-    m = parameters[0]
-    c = parameters[1]
-    delta_m, delta_c = calculate_error_derivative(m,c,data)
     counter = 0
+    counter2 = 0
+    errors = []
+    dirivitive_history = []
+    parameter_history = []
     #while loop impliments changes to m and c until dirivitive is within an acceptable_error;
     if not type(iterations) == int:
-        while not (delta_m < epsilon and delta_m > -epsilon and delta_c < epsilon and delta_c > -epsilon): 
-            delta_m,delta_c = calculate_error_derivative(m,c,data)
-            m = m - step_size * delta_m
-            c = c - step_size * delta_c
+        while not (1 == 1): 
+            for i in range(parameters):
+                delta = calculate_error_derivative(parameters,data,h)
+                parameters[i] -= step_size * delta
             counter += 1  
     else:
-        for i in range(fixed_length):
-            change_m,change_c = calculate_error_derivative(m,c,data)
-            m = m - step_size * change_m
-            c = c - step_size * change_c
+        for i in range(iterations):
+            for l in range(len(parameters)):
+                delta = calculate_error_derivative(parameters,data,h)
+                parameters[l] = parameters[l]-(step_size * delta[l])
+                counter +=1
+            counter2 +=1
+            errors.append(calculate_error(parameters,data))
+            dirivitive_history.append(calculate_error_derivative(parameters,data,h))
+            parameter_history.append(parameters[0])
+    pyplot.ticklabel_format(style='sci', axis='y', scilimits=(0,30))
+    pyplot.plot(dirivitive_history)
+    pyplot.show()
 
+
+    print(counter,counter2)
     #results and info about program's performence;
-    final_values = [m,c]
-    return final_values
+    return parameters
+print(regress([[1,1],[2,4],[3,9],[4,16],[5,25],[6,36]],[1,1,1],0.0001,0.001,0.1,1300))
 def predict(x,parameters):
         if not( type(parameters) == list):
             print("wrong data type for 'parameters'")
@@ -71,5 +87,5 @@ def predict(x,parameters):
             return
         y = parameters[0]*x + parameters[1]
         return y
+
 #example;
-print(predict(10,regress([[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]],[1,1],0.001,0.001,0.00000001)))
