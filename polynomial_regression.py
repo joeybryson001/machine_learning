@@ -1,9 +1,9 @@
 """parameters for this function: data - 2D list,parameters - list, h - small float or int, step_size - small float or int,
 epsilon - small float or int, iterations(optional) - default is None otherwise int""" 
 from matplotlib import pyplot
+import math
+import time
 def regress(data,parameters,h,step_size,epsilon,iterations = 100):
-    import math
-    import time
     start_time = time.time()
     #checking for invalid input
     if not type(data) == list:
@@ -61,9 +61,9 @@ def regress(data,parameters,h,step_size,epsilon,iterations = 100):
             counter += 1  
     else:
         for i in range(iterations):
+            delta = calculate_error_derivative(parameters,data,h)
             for l in range(len(parameters)):
-                delta = calculate_error_derivative(parameters,data,h)
-                parameters[l] = parameters[l]-(step_size * delta[l])
+                parameters[l] -= step_size * delta[l]
                 counter +=1
             counter2 +=1
             errors.append(calculate_error(parameters,data))
@@ -77,7 +77,7 @@ def regress(data,parameters,h,step_size,epsilon,iterations = 100):
     print(counter,counter2)
     #results and info about program's performence;
     return parameters
-print(regress([[1,1],[2,4],[3,9],[4,16],[5,25],[6,36]],[1,1,1],0.0001,0.001,0.1,1300))
+print(regress([[1,1],[2,2],[3,3],[4,4],[5,5],[6,6]],[8,2],0.00001,0.000001,0.01,2000))
 def predict(x,parameters):
         if not( type(parameters) == list):
             print("wrong data type for 'parameters'")

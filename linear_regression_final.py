@@ -26,7 +26,6 @@ def regress(data,parameters,h,step_size,epsilon,iterations = None):
     if not (type(iterations) == int or iterations is None):
         print("wrong data type for 'iterations'")
         return
-    
     #sum of squares function used to calculate error;
     def calculate_error(m,c,data):
         total_error_squared = 0

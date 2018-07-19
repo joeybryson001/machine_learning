@@ -6,3 +6,5 @@ k[2] -= 1
 print(j)
 print(t)
 print(k)
+for i in range(-1):
+    
